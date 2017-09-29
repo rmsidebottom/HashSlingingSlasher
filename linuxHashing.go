@@ -89,7 +89,7 @@ func main() {
 	go func() {
 		defer close(files)
 		done := make(chan bool)
-		filePath := "/Users/daboss/go/src/HashSlingingSlasher/test"
+		filePath := "/Users/daboss/go/"
 		start := fmt.Sprintf("%s", filePath)
 		// fmt.Println(start)
 		go func() {
@@ -175,12 +175,13 @@ func fileFunc(path string, _ os.FileInfo, _ error) error {
 				return nil
 			}
 
+			// setting up the variables for submission
 			hashResult = hex.EncodeToString(hash.Sum(nil)[:16])
 			var hashTime = time.Now().UTC().Format("2006-01-02 15:04:05.000000")
 			var dateFileModified = fileDir.ModTime().UTC().Format("2006-01-02 15:04:05")
 			var ext = filepath.Ext(path)
 			var perms = fileDir.Mode().String()
-			// fmt.Println(path)
+
 			var fHashInfo = fileHashInfo{path, ext, perms, hashResult, hashTime, dateFileModified, "--", "--"}
 			files <- fHashInfo
 			return nil
@@ -203,7 +204,7 @@ func toDB(file fileHashInfo) string {
 	// if rows == nil, no entry, add new one
 	if err == sql.ErrNoRows {
 		//IF ITS NEW, ADD TO A QUEUE TO BULK INSERT
-		sqlStmt = fmt.Sprintf("(\"%s\", \"%s\", \"%s\", \"%s\", '%s', '%s')",
+		sqlStmt = fmt.Sprintf("('%s', '%s', '%s', '%s', '%s', '%s')",
 			file.path, file.extension, file.permissions, file.hash,
 			file.hashTime, file.modifiedDate)
 		//return the sql code
